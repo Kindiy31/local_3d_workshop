@@ -1,0 +1,160 @@
+{
+  "name": "Hunyuan 2D в†’ 3D вЂ” РјРѕРЅС–С‚РѕСЂРёРЅРі Р·Р°РІРґР°РЅСЊ",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hunyuan-monitor",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "2512b9e2-5aa3-49d1-8f05-4b7f8c81c001",
+      "name": "РќРѕРІРµ Р·Р°РІРґР°РЅРЅСЏ",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "hunyuan-monitor"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'http://127.0.0.1:7861/api/jobs/' + ($json.body?.job_id || $json.id) }}",
+        "options": {}
+      },
+      "id": "2512b9e2-5aa3-49d1-8f05-4b7f8c81c002",
+      "name": "РџРѕС‚РѕС‡РЅРёР№ СЃС‚Р°РЅ С– GPU",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "2512b9e2-5aa3-49d1-8f05-4b7f8c81c006",
+              "leftValue": "={{ ['running','starting'].includes($json.state) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2512b9e2-5aa3-49d1-8f05-4b7f8c81c003",
+      "name": "Р©Рµ РІРёРєРѕРЅСѓС”С‚СЊСЃСЏ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "id": "2512b9e2-5aa3-49d1-8f05-4b7f8c81c004",
+      "name": "Р§РµРєР°С‚Рё 1 С…РІ",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        180
+      ],
+      "webhookId": "hunyuan-wait"
+    },
+    {
+      "parameters": {
+        "jsCode": "const job = $input.first().json; return [{json: {id: job.id, kind: job.kind, state: job.state, percent: job.percent, stage: job.stage, elapsed_seconds: job.elapsed_seconds, eta_seconds: job.eta_seconds, files: job.files, exit_code: job.exit_code, message: job.state === 'completed' ? 'Р“РѕС‚РѕРІРѕ' : job.state === 'failed' ? 'РџРѕРјРёР»РєР°' : 'РџСЂРѕС†РµСЃ РїРµСЂРµСЂРІР°РЅРѕ'}}];"
+      },
+      "id": "2512b9e2-5aa3-49d1-8f05-4b7f8c81c005",
+      "name": "РџС–РґСЃСѓРјРѕРє СѓРєСЂР°С—РЅСЃСЊРєРѕСЋ",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        420
+      ]
+    }
+  ],
+  "connections": {
+    "РќРѕРІРµ Р·Р°РІРґР°РЅРЅСЏ": {
+      "main": [
+        [
+          {
+            "node": "РџРѕС‚РѕС‡РЅРёР№ СЃС‚Р°РЅ С– GPU",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "РџРѕС‚РѕС‡РЅРёР№ СЃС‚Р°РЅ С– GPU": {
+      "main": [
+        [
+          {
+            "node": "Р©Рµ РІРёРєРѕРЅСѓС”С‚СЊСЃСЏ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Р©Рµ РІРёРєРѕРЅСѓС”С‚СЊСЃСЏ?": {
+      "main": [
+        [
+          {
+            "node": "Р§РµРєР°С‚Рё 1 С…РІ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "РџС–РґСЃСѓРјРѕРє СѓРєСЂР°С—РЅСЃСЊРєРѕСЋ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Р§РµРєР°С‚Рё 1 С…РІ": {
+      "main": [
+        [
+          {
+            "node": "РџРѕС‚РѕС‡РЅРёР№ СЃС‚Р°РЅ С– GPU",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all"
+  },
+  "active": false,
+  "pinData": {},
+  "tags": []
+}

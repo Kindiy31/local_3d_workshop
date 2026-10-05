@@ -1,0 +1,7 @@
+fastapi==0.115.12
+uvicorn==0.34.2
+python-multipart==0.0.20
+Pillow>=10,<12
+trimesh>=4,<5
+opencv-python==4.11.0.86
+numpy==1.26.4

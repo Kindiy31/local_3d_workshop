@@ -1,0 +1,15 @@
+runtime/
+.env
+.venv/
+__pycache__/
+*.pyc
+*.log
+*.pid
+models/
+weights/
+*.glb
+*.fbx
+*.blend
+*.safetensors
+*.ckpt
+*.zip
